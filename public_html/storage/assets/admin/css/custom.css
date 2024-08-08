@@ -50,3 +50,10 @@ input[switch]:checked+label:after {
 .select2-dropdown {
     z-index: 99999;
 }
+.dataTables_filter{
+    width: 30%;
+    float: right;
+}
+div.dataTables_wrapper div.dataTables_filter input {
+    height: 34px;
+}

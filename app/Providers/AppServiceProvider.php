@@ -14,6 +14,7 @@ class AppServiceProvider extends ServiceProvider
     {
         AliasLoader::getInstance([
             'SiteHelper' => \App\Libraries\SiteHelper::class,
+            'DataTableHelper' => \App\Libraries\DataTableHelper::class,
         ]);
     }
 

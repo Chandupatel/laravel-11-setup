@@ -15,9 +15,9 @@
                 <div class="card">
                     <div class="card-body border-bottom">
                         <div class="d-flex align-items-center">
-                            <a href="#!" class="btn btn-secondary btn-rounded">
+                            {{-- <a href="{{route('admin.modules.index')}}" class="btn btn-secondary btn-rounded">
                                 <i class="bx bx-left-arrow-alt"></i>
-                            </a>
+                            </a> --}}
                             <h5 class="mb-0 card-title flex-grow-1"></h5>
                             <div class="flex-shrink-0">
                                 <a href="javascript:void(0);"class="btn btn-outline-primary waves-effect waves-light"
@@ -70,6 +70,7 @@
     </div>
 @endsection
 @section('scripts')
+    <script src="{{asset('vendor/datatables/buttons.server-side.js')}}"></script>
     @include('layouts.admin.datatable.script')
     <script type="text/javascript">
         

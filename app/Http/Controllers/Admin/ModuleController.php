@@ -34,14 +34,14 @@ class ModuleController extends Controller
                 'status' => ['required','string','max:250'],
             ], []);
 
-            $result = ['message' => '', 'status' => true];
+            $result = ['message' => '', 'valid' => true];
             if ($validator->fails()) {
                 $errors = $validator->errors();
-                $result = ['message' => '', 'errors' => $errors, 'status' => 'validator_error'];
+                $result = ['message' => '', 'errors' => $errors,'valid' => false, 'status' => 'validator_error'];
             }
             return $result;
         } catch (\Throwable $th) {
-            $result = ['message' => $th->getMessage(), 'status' => false];
+            $result = ['message' => $th->getMessage().'|'.$th->getFile().'|'.$th->getLine(),'valid' => false, 'status' => false];
             return $result;
         }
     }
@@ -50,7 +50,7 @@ class ModuleController extends Controller
     {
         try {
             $validation  = $this->checkRequestValidation($request);
-            if (!$validation['status']) {
+            if (!$validation['valid']) {
                 return response()->json($validation, 200);
             }
             $response = ['message' => 'Oops..something has went wrong. Please try again.', 'status' => false];
@@ -61,7 +61,7 @@ class ModuleController extends Controller
 
             return response()->json($response, 200);
         } catch (\Throwable $th) {
-            $result = ['message' => $th->getMessage(), 'status' => false];
+            $result = ['message' => $th->getMessage().'|'.$th->getFile().'|'.$th->getLine() , 'status' => false];
             return response()->json($result, 200);
         }
     }
@@ -93,7 +93,7 @@ class ModuleController extends Controller
 
             $validation  = $this->checkRequestValidation($request);
             
-            if (!$validation['status']) {
+            if (!$validation['valid']) {
                 return response()->json($validation, 200);
             }
             

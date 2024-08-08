@@ -12,23 +12,27 @@ class ModuleService  extends BaseService
             $results = $results->with(['parent_module']);
         }
 
-
         if (!empty($filters['parent_id'])) {
             $filters['parent_id'] =  $filters['parent_id'] == 'all-Parent' ? 0:$filters['parent_id'];
             $results = $results->where('parent_id', $filters['parent_id']);
         }
+
+        if (!empty($filters['name'])) {
+            $results = $results->where('name', 'LIKE', $filters['name'] .'%');
+        }
+
         if ($type== 'get') {
             $results = $results->get();
         }elseif($type =="defaultPaginate"){
             $results = $results->paginate(25);
         }
-        
         return $results;
     
     }
 
     public static function insertOrUpdate($data, $id = null){
         try {
+            
             $obj = new  Module;
             if (!empty($id)) {
                 $obj  =   $obj->find($id);
@@ -58,6 +62,7 @@ class ModuleService  extends BaseService
             if (!empty($data['is_multi_level'])) {
                 $obj->is_multi_level = $data['is_multi_level'];
             }
+
             if (!empty($data['status'])) {
                 $obj->status = $data['status'];
             }

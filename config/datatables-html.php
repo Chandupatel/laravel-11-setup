@@ -11,7 +11,7 @@ return [
      * Default table attributes when generating the table.
      */
     'table' => [
-        'class' => 'table',
+        'class' => 'table align-middle dt-responsive nowrap w-100 table-check dataTable',
         'id' => 'dataTableBuilder',
     ],
 

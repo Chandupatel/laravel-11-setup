@@ -2,7 +2,7 @@
 
 namespace App\DataTables\DataTables\Admin;
 
-use App\Libraries\SiteHelper;
+use App\Libraries\DataTableHelper;
 use App\Models\Module;
 use App\Services\ModuleService;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
@@ -10,8 +10,6 @@ use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Yajra\DataTables\Html\Editor\Editor;
-use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 use Illuminate\Http\Request;
 
@@ -23,6 +21,7 @@ class ModuleDataTable extends DataTable
      * @param QueryBuilder $query Results from query() method.
      */
     protected $dataTableId = 'moduleDataTable';
+    
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
@@ -45,6 +44,7 @@ class ModuleDataTable extends DataTable
             $actions = [
                 'dataTableId'=>$this->dataTableId,
                 'type'=>'switch',
+                'status_url' => route('admin.modules.status', $row->id),
                 'input_id'=>$row->id,
                 'status' => $row->status,
             ];
@@ -63,6 +63,7 @@ class ModuleDataTable extends DataTable
     public function query(Module $model): QueryBuilder
     {
         $request = request()->all();
+
         $request['with_relation'] = 1;
         $query = ModuleService::getList($request);
         
@@ -74,13 +75,14 @@ class ModuleDataTable extends DataTable
      */
     public function html(): HtmlBuilder
     {
+        
         return $this->builder()
             ->setTableId($this->dataTableId)
-            ->ajax(SiteHelper::getDataTableAjax(['url'=>route('admin.modules.index'), 'method'=>'GET']))
-            ->addTableClass('table align-middle dt-responsive nowrap w-100 table-check dataTable')
+            ->parameters(DataTableHelper::getDataTableParameters())
+            ->ajax(DataTableHelper::getDataTableAjax(['url'=>route('admin.modules.index'), 'method'=>'GET']))
             ->columns($this->getColumns())
-            //->minifiedAjax()
-            //->dom('Bfrtip')
+            // ->minifiedAjax()
+            ->dom('Bfrtip')
             ->orderBy(0)
             ->selectStyleSingle()
             ->buttons([
@@ -88,8 +90,7 @@ class ModuleDataTable extends DataTable
                 Button::make('csv'),
                 Button::make('pdf'),
                 Button::make('print'),
-                Button::make('reset'),
-                Button::make('reload')
+                
             ]);
     }
 
