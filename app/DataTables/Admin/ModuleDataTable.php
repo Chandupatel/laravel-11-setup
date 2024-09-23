@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTables\DataTables\Admin;
+namespace App\DataTables\Admin;
 
 use App\Libraries\DataTableHelper;
 use App\Models\Module;

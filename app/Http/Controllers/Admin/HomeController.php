@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+
 class HomeController extends Controller
 {
     public function dashboard(Request $request)
@@ -15,13 +16,15 @@ class HomeController extends Controller
         return view('admin.dashboard');
 
     }
+    
 
     public function profile(Request $request)
     {
         return view('admin.profile');
 
     }
-    public function updateProfile(Request $request)  {
+    public function updateProfile(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:250', 'string'],
         ]);
@@ -41,13 +44,15 @@ class HomeController extends Controller
                 $result = ['message' => 'Oops..something has went wrong. Please try again.', 'status' => false];
                 return response()->json($result, 200);
             }
-        } catch (\Throwable$e) {
-            $result = ['message' => $e->getMessage(), 'status' => false];
-            return response()->json($result, 200);
+        } catch (\Throwable $th) {
+            $this->saveErrorLog($th);
+            $response = ['message' => 'Internal server error.', 'status' => false];
+            return response()->json($response, 200);
         }
     }
 
-    public function changePassword(Request $request)  {
+    public function changePassword(Request $request)
+    {
         return view('admin.change-password');
     }
 
@@ -57,7 +62,7 @@ class HomeController extends Controller
 
             $rules = [
                 'old_password' => [
-                    'required'
+                    'required',
                 ],
                 'password' => [
                     'required',
@@ -68,10 +73,10 @@ class HomeController extends Controller
                     'required',
                     'min:8',
                     'regex:/^(?!.*\s)(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/',
-                    'same:password'
+                    'same:password',
                 ],
             ];
-            
+
             $messages = [
                 'old_password.required' => 'The old password is required.',
                 'password.required' => 'The password is required.',
@@ -82,9 +87,9 @@ class HomeController extends Controller
                 'confirm_password.regex' => 'Password should be a minimum of 8 characters long, containing at least one lowercase letter, one uppercase letter, one number, and one special character (excluding spaces).',
                 'confirm_password.same' => 'The new confirm password must match the new password.',
             ];
-            
+
             $validator = Validator::make($request->all(), $rules, $messages);
-            
+
             if ($validator->fails()) {
                 $errors = $validator->errors();
                 $result = ['message' => '', 'errors' => $errors, 'status' => 'validator_error'];
@@ -103,7 +108,7 @@ class HomeController extends Controller
                         return response()->json($result, 200);
                     }
                 } else {
-                    $result = ['message' => '','errors' => ['confirm_password' => ['Confirm Password Doesnot Match.']], 'status' => 'validator_error'];
+                    $result = ['message' => '', 'errors' => ['confirm_password' => ['Confirm Password Doesnot Match.']], 'status' => 'validator_error'];
                     return response()->json($result, 200);
                 }
             } else {
@@ -111,8 +116,9 @@ class HomeController extends Controller
                 return response()->json($result, 200);
             }
         } catch (\Throwable $th) {
-            $result = ['message' => $th->getMessage(), 'status' => false];
-            return response()->json($result, 200);
+            $this->saveErrorLog($th);
+            $response = ['message' => 'Internal server error.', 'status' => false];
+            return response()->json($response, 200);
         }
     }
 }

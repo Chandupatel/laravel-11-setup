@@ -25,6 +25,7 @@ class SiteHelper
         $modules = $modules->orderBy('display_order', 'ASC')
             ->withCount(['sub_modules'])
             ->get();
+
         return $modules;
     }
 

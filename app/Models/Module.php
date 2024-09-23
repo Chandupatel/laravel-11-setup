@@ -9,6 +9,8 @@ class Module extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['parent_id', 'name', 'active_cases', 'icon', 'route_name', 'route_params', 'is_multi_level', 'status'];
+
     public function sub_modules()
     {
         return $this->hasMany(Module::class, 'parent_id');

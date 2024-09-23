@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         }
     )
     ->withMiddleware(function (Middleware $middleware) {
+        
         /* $middleware->web(append: [
             EnsureUserIsSubscribed::class,
         ]);
@@ -26,8 +27,8 @@ return Application::configure(basePath: dirname(__DIR__))
             EnsureTokenIsValid::class,
         ]); */
         $middleware->alias([
+            'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
             'admin' => \App\Http\Middleware\Admin::class
-            
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

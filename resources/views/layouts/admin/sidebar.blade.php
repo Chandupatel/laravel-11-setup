@@ -35,7 +35,7 @@
                                         aria-expanded="false">
                                         @foreach ($item->sub_modules as $sub_module)
                                             @php
-                                                if (!empty($sub_module->url_slug)) {
+                                                if (!empty($sub_module->route_params)) {
                                                     $url = route($sub_module->route_name, $sub_module->route_params);
                                                 } else {
                                                     $url = route($sub_module->route_name);

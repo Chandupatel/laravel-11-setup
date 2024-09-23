@@ -1,25 +1,19 @@
 <?php
 namespace App\Services;
 
-use App\Models\Module;
+use App\Models\Role;
 
-class ModuleService extends BaseService
+class RoleService extends BaseService
 {
     public static function instance()
     {
         return new self();
     }
+
     public static function getList($filters, $type = null)
     {
         try {
-            $query = Module::query();
-            if (!empty($filters['with_relation'])) {
-                $query = $query->with(['parent_module']);
-            }
-            if (!empty($filters['parent_id'])) {
-                $filters['parent_id'] = $filters['parent_id'] == 'all-Parent' ? 0 : $filters['parent_id'];
-                $query = $query->where('parent_id', $filters['parent_id']);
-            }
+            $query = Role::query();
             if (!empty($filters['name'])) {
                 $query = $query->where('name', 'LIKE', $filters['name'] . '%');
             }
@@ -31,11 +25,12 @@ class ModuleService extends BaseService
         return $result;
 
     }
+
     public static function insertOrUpdate($data, $id = null)
     {
         $response = ['data' => [], 'status' => false];
         try {
-            $module = !empty($id) ? Module::find($id) : new Module;
+            $module = !empty($id) ? Role::find($id) : new Role;
             $attributes = $module->getFillable();
             foreach ($attributes as $attribute) {
                 if (!empty($data[$attribute])) {
@@ -54,7 +49,7 @@ class ModuleService extends BaseService
     {
         $result = ['data' => [], 'status' => false];
         try {
-            $module = Module::find($id);
+            $module = Role::find($id);
             $result = $module ? $module : $result;
         } catch (\Throwable $th) {
             self::instance()->saveErrorLog($th);
@@ -91,4 +86,5 @@ class ModuleService extends BaseService
         }
         return $response;
     }
+
 }

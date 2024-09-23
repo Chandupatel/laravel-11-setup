@@ -2,50 +2,87 @@
 
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\ModuleController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Auth\Admin\LoginController;
 use Illuminate\Support\Facades\Route;
 
+Route::middleware(['guest'])->group(function () {
 
-Route::get('/', [LoginController::class, 'showLoginForm'])->name('admin');
-Route::post('/login', [LoginController::class, 'login'])->name('login');
+    Route::controller(LoginController::class)->group(function () {
+        Route::get('/', 'showLoginForm')->name('admin');
+        Route::post('/login', 'login')->name('login');
+    });
+
+});
+
+// Define a function for common routes
+function registerCommonRoutes()
+{
+    Route::get('/', 'index')->name('index');
+    Route::get('/create', 'create')->name('create');
+    Route::post('/store', 'store')->name('store');
+    Route::get('/edit/{id}', 'edit')->name('edit');
+    Route::post('/update/{id}', 'update')->name('update');
+    Route::post('/status/{id}', 'status')->name('status');
+    Route::delete('/destroy/{id}', 'destroy')->name('destroy');
+}
 
 Route::middleware(['admin'])->group(function () {
+
+    // Logout route
     Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
-    
-    //Dashboard Route
-    Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
 
-    //Profile Route
-    Route::get('/profile', [HomeController::class, 'profile'])->name('profile');
-    Route::post('/update-profile', [HomeController::class, 'updateProfile'])->name('update-profile');
+    // HomeController routes (Dashboard and Profile Management)
+    Route::controller(HomeController::class)->group(function () {
+        //Dashboard Route
+        Route::get('/dashboard', 'dashboard')->name('dashboard');
 
-    //Change Password Route
-    Route::get('/change-password', [HomeController::class, 'changePassword'])->name('change-password');
-    Route::post('/update-change-password', [HomeController::class, 'updateChangePassword'])->name('update-change-password');
+        // Profile Management
+        Route::prefix('profile')->group(function () {
+            Route::get('/', 'profile')->name('profile');
+            Route::post('/update', 'updateProfile')->name('update-profile');
+            Route::get('/change-password', 'changePassword')->name('change-password');
+            Route::post('/update-password', 'updateChangePassword')->name('update-change-password');
+        });
+    });
 
-
+    //Role And Permission Route
     Route::prefix('role-and-permission')->group(function () {
-        
-        Route::prefix('modules')->name('modules.')->group(function () {
-            Route::get('/', [ModuleController::class, 'index'])->name('index');
-            Route::get('/create', [ModuleController::class, 'create'])->name('create');
-            Route::post('/store', [ModuleController::class, 'store'])->name('store');
-            Route::get('/edit/{id}', [ModuleController::class, 'edit'])->name('edit');
-            Route::post('/update/{id}', [ModuleController::class, 'update'])->name('update');
-            Route::post('/status/{id}', [ModuleController::class, 'status'])->name('status');
-            Route::delete('/destroy/{id}', [ModuleController::class, 'destroy'])->name('destroy');
-        });
 
-        Route::prefix('roles')->name('roles.')->group(function () {
-            Route::get('/', [HomeController::class, 'dashboard'])->name('dashboard');
-        });
-        
-        Route::prefix('permissions')->name('permissions.')->group(function () {
-            Route::get('/', [HomeController::class, 'dashboard'])->name('dashboard');
-        });
+        //Modules Route
+        Route::prefix('modules')
+            ->name('modules.')
+            ->controller(ModuleController::class)
+            ->group(function () {
+                registerCommonRoutes();
+                Route::get('/get-sub-modules', 'getSubModules')->name('get-sub-modules');
+            });
+
+        //Roles Route
+        Route::prefix('roles')
+            ->name('roles.')
+            ->controller(RoleController::class)
+            ->group(callback: function () {
+                registerCommonRoutes();
+            });
+
+        //Permission Route
+        Route::prefix('permissions')
+            ->name('permissions.')
+            ->controller(PermissionController::class)
+            ->group(callback: function () {
+                registerCommonRoutes();
+            });
 
     });
 
-
-    
+    Route::prefix('settings')
+        ->name('settings.')
+        ->controller(SettingController::class)
+        ->group(function () {
+            Route::get('/{group}', 'settingsGroup')->name('group');
+            Route::post('/update/{group}', 'settingsGroupUpdate')->name('update.group');
+        });
 });
